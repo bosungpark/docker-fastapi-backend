@@ -1,3 +1,4 @@
+import uvicorn as uvicorn
 from fastapi import FastAPI
 from starlette.responses import HTMLResponse
 from starlette.websockets import WebSocket, WebSocketDisconnect
@@ -20,9 +21,9 @@ html = """
         <ul id='messages'>
         </ul>
         <script>
-            var client_id = Date.now()
+            var client_id = Date.now()  # client setting
             document.querySelector("#ws-id").textContent = client_id;
-            var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);
+            var ws = new WebSocket(`ws://localhost:8000/ws/${client_id}`);  # port setting
             ws.onmessage = function(event) {
                 var messages = document.getElementById('messages')
                 var message = document.createElement('li')
@@ -80,3 +81,6 @@ async def websocket_endpoint(websocket: WebSocket, client_id: int):
     except WebSocketDisconnect:
         manager.disconnect(websocket)
         await manager.broadcast(f"Client #{client_id} left the chat")
+
+if __name__ == '__main__':
+    uvicorn.run(app, host="0.0.0.0", port=8000)
